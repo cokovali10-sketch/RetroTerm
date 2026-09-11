@@ -1,2 +1,11 @@
 retroterm
+retroterm.exe
 *.o
+savegame.json
+tests/test_game
+tests/test_game.exe
+tests/*.o
+.vscode/
+.idea/
+*.swp
+*~
