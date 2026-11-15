@@ -9,27 +9,27 @@ static int tests_run = 0;
 static int tests_passed = 0;
 static int tests_failed = 0;
 
-#define TEST(name) \
-    static void test_##name(); \
-    struct TestReg_##name { \
-        TestReg_##name() { \
-            tests_run++; \
-            std::cout << "  Running " #name "... "; \
-            try { \
-                test_##name(); \
-                tests_passed++; \
-                std::cout << "\033[32mPASS\033[0m\n"; \
-            } catch (const std::exception& e) { \
-                tests_failed++; \
-                std::cout << "\033[31mFAIL\033[0m (" << e.what() << ")\n"; \
-            } catch (...) { \
-                tests_failed++; \
-                std::cout << "\033[31mFAIL\033[0m (unknown exception)\n"; \
-            } \
-        } \
-    } static TestReg_##name static_reg_##name; \
-    static void test_##name()
+static void run_test(const char* name, void (*fn)()) {
+    tests_run++;
+    std::cout << "  Running " << name << "... ";
+    try {
+        fn();
+        tests_passed++;
+        std::cout << "\033[32mPASS\033[0m\n";
+    } catch (const std::exception& e) {
+        tests_failed++;
+        std::cout << "\033[31mFAIL\033[0m (" << e.what() << ")\n";
+    } catch (...) {
+        tests_failed++;
+        std::cout << "\033[31mFAIL\033[0m (unknown exception)\n";
+    }
+}
 
+#define TEST(name)                          \
+    static void test_##name();              \
+    static const bool registered_##name =   \
+        (run_test(#name, &test_##name), true); \
+    static void test_##name()
 #define ASSERT(expr) \
     do { if (!(expr)) throw std::runtime_error("ASSERT failed: " #expr); } while(0)
 
@@ -356,16 +356,16 @@ TEST(skill_special) {
 }
 
 TEST(random_enemy_type_returns_valid) {
-    for (int i = 0; i < 100; i++) {
-        EnemyType t = random_enemy_type(rand_int(1, 12));
+    for (int i = 1; i <= 12; i++) {
+        EnemyType t = random_enemy_type(i);
         int v = static_cast<int>(t);
         ASSERT(v >= 0 && v <= 4);
     }
 }
 
 TEST(random_item_type_returns_valid) {
-    for (int i = 0; i < 100; i++) {
-        ItemType t = random_item_type(rand_int(1, 12));
+    for (int i = 1; i <= 12; i++) {
+        ItemType t = random_item_type(i);
         int v = static_cast<int>(t);
         ASSERT(v >= 0 && v <= 4);
     }
