@@ -27,8 +27,7 @@ static int tests_failed = 0;
                 std::cout << "\033[31mFAIL\033[0m (unknown exception)\n"; \
             } \
         } \
-    } static_reg_##name; \
-    static TestReg_##name static_reg_##name; \
+    } static TestReg_##name static_reg_##name; \
     static void test_##name()
 
 #define ASSERT(expr) \
